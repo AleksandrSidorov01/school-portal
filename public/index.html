@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Школьный портал</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: #2c3e50;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      color: #2c3e50;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    .form, .section {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 0 auto 20px;
+      max-width: 800px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.5s ease-in;
+      position: relative;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2, h3 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+    h2 i, h3 i {
+      margin-right: 8px;
+      color: #27ae60;
+    }
+    input, select {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus {
+      border-color: #27ae60;
+      outline: none;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(45deg, #27ae60, #2ecc71);
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button i {
+      margin-right: 5px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .delete-btn {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+    }
+    .delete-btn:hover {
+      background: linear-gradient(45deg, #c0392b, #e74c3c);
+    }
+    .grade-btn {
+      padding: 8px 15px;
+      font-size: 0.9em;
+    }
+    .edit-grade button {
+      background: none;
+      color: #3498db;
+      border: none;
+      font-size: 1.2em;
+      cursor: pointer;
+      padding: 0 5px;
+    }
+    .edit-grade button:hover {
+      color: #2980b9;
+    }
+    .hidden { display: none; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: #fff;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    th {
+      background: #2c3e50;
+      color: white;
+      cursor: pointer;
+    }
+    th:hover {
+      background: #34495e;
+    }
+    tr:nth-child(even) {
+      background: #f9fafb;
+    }
+    .grade-input {
+      display: inline-block;
+      width: 120px;
+      margin-right: 5px;
+    }
+    .grade-select {
+      display: inline-block;
+      width: 60px;
+      margin-right: 5px;
+    }
+    /* Цвета для оценок и среднего балла */
+    .grade-2, .avg-2 { color: #e74c3c; font-weight: bold; }
+    .grade-3, .avg-3 { color: #e67e22; font-weight: bold; }
+    .grade-4, .avg-4 { color: #d8db34; font-weight: bold; }
+    .grade-5, .avg-5 { color: #27ae60; font-weight: bold; }
+    /* Стиль спиннера */
+    .spinner {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #27ae60;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    /* Стиль уведомления о cookies */
+    #cookie-notice {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2c3e50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 90%;
+      text-align: center;
+      z-index: 1000;
+    }
+    #cookie-notice button {
+      margin-top: 10px;
+      background: linear-gradient(45deg, #27ae60, #2ecc71);
+      padding: 8px 15px;
+    }
+    /* Стиль всплывающих уведомлений */
+    #notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #27ae60;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      max-width: 300px;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    #notification.error {
+      background: #e74c3c;
+    }
+    #notification.show {
+      opacity: 1;
+    }
+    /* Стиль для списка оценок */
+    .grades-list span {
+      white-space: nowrap; /* Запятая не переносится */
+    }
+    .grades-list {
+      display: inline; /* Для корректного переноса списка */
+    }
+
+    /* Адаптивный дизайн для мобильных устройств */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+      .form, .section {
+        padding: 15px;
+        max-width: 100%;
+      }
+      h2, h3 {
+        font-size: 1.2em;
+      }
+      input, select, button {
+        font-size: 0.9em;
+        padding: 8px;
+      }
+      button {
+        width: 100%;
+      }
+      .grade-input {
+        width: 100%;
+        margin: 5px 0;
+      }
+      .grade-select {
+        width: 100%;
+        margin: 5px 0;
+      }
+      .grade-btn {
+        width: 100%;
+        margin: 5px 0;
+      }
+      table {
+        display: block;
+      }
+      thead {
+        display: none;
+      }
+      tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: #fff;
+      }
+      td {
+        display: block;
+        padding: 10px;
+        border: none;
+        position: relative;
+      }
+      td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #2c3e50;
+        display: block;
+        margin-bottom: 5px;
+      }
+      td:last-child {
+        border-bottom: 1px solid #eee;
+      }
+      .spinner {
+        width: 30px;
+        height: 30px;
+        border-width: 3px;
+      }
+      #cookie-notice {
+        bottom: 10px;
+        padding: 10px;
+        font-size: 0.9em;
+      }
+      #notification {
+        top: 10px;
+        right: 10px;
+        max-width: 90%;
+      }
+      /* Дополнительные стили для списка оценок на узких экранах */
+      .grades-list {
+        display: block; /* Чтобы весь список переносился целиком */
+        line-height: 1.5; /* Для читабельности */
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1><i class="fas fa-school"></i> Школьный портал</h1>
+  
+  <div class="form" id="auth-section">
+    <div class="spinner" id="auth-spinner"></div>
+    <h2><i class="fas fa-user-plus"></i> Регистрация</h2>
+    <input id="reg-login" placeholder="Логин" />
+    <input id="reg-password" type="password" placeholder="Пароль" />
+    <button onclick="register()"><i class="fas fa-check"></i> Зарегистрироваться</button>
+
+    <h2><i class="fas fa-sign-in-alt"></i> Вход</h2>
+    <input id="login-login" placeholder="Логин" />
+    <input id="login-password" type="password" placeholder="Пароль" />
+    <button onclick="login()"><i class="fas fa-sign-in-alt"></i> Войти</button>
+  </div>
+
+  <div class="section hidden" id="dashboard">
+    <div class="spinner" id="dashboard-spinner"></div>
+    <h2><i class="fas fa-tachometer-alt"></i> Панель управления</h2>
+    <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+    <div id="admin-tools" class="hidden">
+      <h3><i class="fas fa-user-graduate"></i> Добавить ученика</h3>
+      <input id="student-name" placeholder="Имя ученика" />
+      <input id="student-class" placeholder="Класс (например, 10А)" />
+      <button onclick="addStudent()"><i class="fas fa-plus"></i> Добавить</button>
+    </div>
+    <div id="teacher-tools" class="hidden"></div>
+    <h3><i class="fas fa-list"></i> Список учеников</h3>
+    <table id="students-table">
+      <thead id="table-head"></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="cookie-notice" class="hidden">
+    <p>Мы используем cookies для сохранения вашего входа. Принять?</p>
+    <button onclick="acceptCookies()">Принять</button>
+  </div>
+
+  <div id="notification"></div>
+
+  <script>
+    let token = null;
+    let role = null;
+    let sortDirection = 1;
+
+    // Функции для работы со спиннером
+    function showSpinner(id) {
+      document.getElementById(id).style.display = 'block';
+    }
+    function hideSpinner(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    // Функция для всплывающих уведомлений
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('notification');
+      notification.innerText = message;
+      notification.className = isError ? 'error' : '';
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000); // Уведомление исчезает через 3 секунды
+    }
+
+    // Функции для работы с cookies
+    function setCookie(name, value, days) {
+      const expires = new Date();
+      expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+    }
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+    function deleteCookie(name) {
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
+    }
+
+    // Проверка cookies и автоматический вход
+    window.onload = function() {
+      const savedToken = getCookie('authToken');
+      if (savedToken && !localStorage.getItem('cookiesAccepted')) {
+        document.getElementById('cookie-notice').classList.remove('hidden');
+      }
+      if (savedToken && localStorage.getItem('cookiesAccepted')) {
+        token = savedToken;
+        role = JSON.parse(atob(token.split('.')[1])).role;
+        showDashboard();
+      }
+    };
+
+    function acceptCookies() {
+      localStorage.setItem('cookiesAccepted', 'true');
+      document.getElementById('cookie-notice').classList.add('hidden');
+      if (token) {
+        setCookie('authToken', token, 7);
+      }
+    }
+
+    function register() {
+      showSpinner('auth-spinner');
+      const login = document.getElementById('reg-login').value;
+      const password = document.getElementById('reg-password').value;
+      fetch('http://localhost:3000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login, password })
+      })
+      .then(response => response.text())
+      .then(result => {
+        showNotification(result);
+        hideSpinner('auth-spinner');
+      })
+      .catch(error => {
+        showNotification('Ошибка: ' + error.message, true);
+        hideSpinner('auth-spinner');
+      });
+    }
+
+    function login() {
+      showSpinner('auth-spinner');
+      const login = document.getElementById('login-login').value;
+      const password = document.getElementById('login-password').value;
+      fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login, password })
+      })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => { throw new Error(err.message || 'Ошибка входа') });
+        }
+        return response.json();
+      })
+      .then(result => {
+        token = result.token;
+        role = JSON.parse(atob(token.split('.')[1])).role;
+        showNotification('Вход успешен!');
+        hideSpinner('auth-spinner');
+        if (!localStorage.getItem('cookiesAccepted')) {
+          document.getElementById('cookie-notice').classList.remove('hidden');
+        } else {
+          setCookie('authToken', token, 7);
+        }
+        showDashboard();
+      })
+      .catch(error => {
+        showNotification('Ошибка: ' + error.message, true);
+        hideSpinner('auth-spinner');
+      });
+    }
+
+    function addStudent() {
+      showSpinner('dashboard-spinner');
+      const name = document.getElementById('student-name').value;
+      const studentClass = document.getElementById('student-class').value;
+      fetch('http://localhost:3000/students', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ name, class: studentClass })
+      })
+      .then(response => response.text())
+      .then(result => {
+        showNotification(result);
+        hideSpinner('dashboard-spinner');
+        loadStudents();
+      })
+      .catch(error => {
+        showNotification('Ошибка: ' + error.message, true);
+        hideSpinner('dashboard-spinner');
+      });
+    }
+
+    function addGrade(studentId, subjectInputId, gradeSelectId) {
+      showSpinner('dashboard-spinner');
+      const subject = document.getElementById(subjectInputId).value;
+      const grade = document.getElementById(gradeSelectId).value;
+      fetch('http://localhost:3000/grades', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ studentId, subject, grade })
+      })
+      .then(response => response.text())
+      .then(result => {
+        showNotification(result);
+        hideSpinner('dashboard-spinner');
+        loadStudents();
+      })
+      .catch(error => {
+        showNotification('Ошибка: ' + error.message, true);
+        hideSpinner('dashboard-spinner');
+      });
+    }
+
+    function deleteStudent(studentId) {
+      if (confirm('Вы уверены, что хотите удалить этого ученика?')) {
+        showSpinner('dashboard-spinner');
+        fetch(`http://localhost:3000/students/${studentId}`, {
+          method: 'DELETE',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        .then(response => response.text())
+        .then(result => {
+          showNotification(result);
+          hideSpinner('dashboard-spinner');
+          loadStudents();
+        })
+        .catch(error => {
+          showNotification('Ошибка: ' + error.message, true);
+          hideSpinner('dashboard-spinner');
+        });
+      }
+    }
+
+    function editGrade(studentId, gradeId, oldSubject, oldGrade) {
+      const subject = prompt('Введите новый предмет:', oldSubject);
+      const grade = prompt('Введите новую оценку (2, 3, 4, 5):', oldGrade);
+      if (subject && grade && ['2', '3', '4', '5'].includes(grade)) {
+        showSpinner('dashboard-spinner');
+        fetch(`http://localhost:3000/students/${studentId}/grades/${gradeId}`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ subject, grade })
+        })
+        .then(response => response.text())
+        .then(result => {
+          showNotification(result);
+          hideSpinner('dashboard-spinner');
+          loadStudents();
+        })
+        .catch(error => {
+          showNotification('Ошибка: ' + error.message, true);
+          hideSpinner('dashboard-spinner');
+        });
+      } else {
+        alert('Оценка должна быть 2, 3, 4 или 5');
+      }
+    }
+
+    function calculateAverage(grades) {
+      if (!grades || grades.length === 0) return 'N/A';
+      const sum = grades.reduce((acc, g) => acc + parseInt(g.grade), 0);
+      return (sum / grades.length).toFixed(2);
+    }
+
+    function getAverageClass(avg) {
+      if (avg === 'N/A') return '';
+      const numAvg = parseFloat(avg);
+      if (numAvg < 2.5) return 'avg-2';
+      if (numAvg < 3.5) return 'avg-3';
+      if (numAvg < 4.5) return 'avg-4';
+      return 'avg-5';
+    }
+
+    function loadStudents(sortBy = 'class') {
+      showSpinner('dashboard-spinner');
+      fetch('http://localhost:3000/students', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      .then(response => response.json())
+      .then(students => {
+        students.sort((a, b) => {
+          if (sortBy === 'name') return sortDirection * a.name.localeCompare(b.name);
+          if (sortBy === 'class') {
+            const classA = a.class.match(/\d+|[^\d]+/g);
+            const classB = b.class.match(/\d+|[^\d]+/g);
+            const numA = parseInt(classA[0]);
+            const numB = parseInt(classB[0]);
+            const letterA = classA[1] || '';
+            const letterB = classB[1] || '';
+            if (numA === numB) return letterA.localeCompare(letterB);
+            return numA - numB;
+          }
+          return 0;
+        });
+
+        const thead = document.getElementById('table-head');
+        const tbody = document.querySelector('#students-table tbody');
+        thead.innerHTML = role === 'admin' 
+          ? '<tr><th onclick="loadStudents(\'name\')">Имя</th><th onclick="loadStudents(\'class\')">Класс</th><th>Оценки</th><th>Средний балл</th><th>ID</th><th>Добавил</th><th>Действия</th></tr>'
+          : '<tr><th onclick="loadStudents(\'name\')">Имя</th><th onclick="loadStudents(\'class\')">Класс</th><th>Оценки</th><th>Средний балл</th></tr>';
+        tbody.innerHTML = '';
+        students.forEach(student => {
+          let gradesList = student.grades
+            .map(g => `<span>${g.subject}: <span class="grade-${g.grade}">${g.grade}</span>${role === 'admin' || role === 'teacher' ? ` <span class="edit-grade"><button onclick="editGrade('${student._id}', '${g._id}', '${g.subject}', '${g.grade}')"><i class="fas fa-edit"></i></button></span>` : ''}</span>`)
+            .join(', ');
+          const avg = calculateAverage(student.grades);
+          const avgClass = getAverageClass(avg);
+          const avgDisplay = avg === 'N/A' ? 'N/A' : `<span class="${avgClass}">${avg}</span>`;
+          const row = document.createElement('tr');
+          let actions = '';
+          if (role === 'teacher') {
+            const subjectInputId = `grade-subject-${student._id}`;
+            const gradeSelectId = `grade-value-${student._id}`;
+            actions = `
+              <br>
+              <input id="${subjectInputId}" class="grade-input" placeholder="Предмет" />
+              <select id="${gradeSelectId}" class="grade-select">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+              <button class="grade-btn" onclick="addGrade('${student._id}', '${subjectInputId}', '${gradeSelectId}')"><i class="fas fa-star"></i> Оценить</button>`;
+          } else if (role === 'admin') {
+            actions = `<button class="delete-btn" onclick="deleteStudent('${student._id}')"><i class="fas fa-trash"></i> Удалить</button>`;
+          }
+          row.innerHTML = role === 'admin'
+            ? `<td data-label="Имя">${student.name}</td><td data-label="Класс">${student.class}</td><td data-label="Оценки"><span class="grades-list">${gradesList || 'Нет оценок'}</span></td><td data-label="Средний балл">${avgDisplay}</td><td data-label="ID">${student._id}</td><td data-label="Добавил">${student.addedBy ? student.addedBy.login : 'Неизвестно'}</td><td data-label="Действия">${actions}</td>`
+            : `<td data-label="Имя">${student.name}</td><td data-label="Класс">${student.class}</td><td data-label="Оценки"><span class="grades-list">${gradesList || 'Нет оценок'}</span>${actions}</td><td data-label="Средний балл">${avgDisplay}</td>`;
+          tbody.appendChild(row);
+        });
+        hideSpinner('dashboard-spinner');
+      })
+      .catch(error => {
+        showNotification('Ошибка загрузки учеников: ' + error.message, true);
+        hideSpinner('dashboard-spinner');
+      });
+    }
+
+    function showDashboard() {
+      const authSection = document.getElementById('auth-section');
+      const dashboard = document.getElementById('dashboard');
+      authSection.classList.add('hidden');
+      dashboard.classList.remove('hidden');
+      if (role === 'admin') {
+        document.getElementById('admin-tools').classList.remove('hidden');
+      }
+      if (role === 'teacher') {
+        document.getElementById('teacher-tools').classList.remove('hidden');
+      }
+      loadStudents();
+    }
+
+    function logout() {
+      deleteCookie('authToken');
+      token = null;
+      role = null;
+      document.getElementById('auth-section').classList.remove('hidden');
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('admin-tools').classList.add('hidden');
+      document.getElementById('teacher-tools').classList.add('hidden');
+      showNotification('Вы вышли из системы');
+    }
+  </script>
+</body>
+</html>
