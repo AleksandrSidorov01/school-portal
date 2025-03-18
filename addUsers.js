@@ -9,23 +9,23 @@ async function addUsers() {
     await connectDB();
 
     // Генерируем хеши паролей
-    const adminPassword = bcrypt.hashSync('xXxDom1xXx', 8);
-    const teacher1Password = bcrypt.hashSync('010508', 8);
-    const teacher2Password = bcrypt.hashSync('150901', 8);
+    const adminPassword = bcrypt.hashSync('пароль', 8); // пароль для админа
+    const teacher1Password = bcrypt.hashSync('пароль', 8); // пароль для учителя
+    const teacher2Password = bcrypt.hashSync('пароль', 8); // пароль для учителя
 
     // Создаем пользователей
     const admin = new User({
-      login: 'Aleksandr',
+      login: 'Логин', //Впишите ваш логин который будет использоваться для сайта (админ)
       password: adminPassword,
       role: 'admin'
     });
     const teacher1 = new User({
-      login: 'Anna',
+      login: 'Логин', //Впишите ваш логин который будет использоваться для сайта (учитель)
       password: teacher1Password,
       role: 'teacher'
     });
     const teacher2 = new User({
-      login: 'Umeda',
+      login: 'Логин', //Впишите ваш логин который будет использоваться для сайта (учитель)
       password: teacher2Password,
       role: 'teacher'
     });
@@ -45,3 +45,5 @@ async function addUsers() {
 }
 
 addUsers();
+
+// файл запускается через powershell 
